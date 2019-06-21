@@ -1,0 +1,7 @@
+## Ignore Visual Studio temporary files, build results, and
+asset
+asset/
+.vscode
+.vscode/
+__pycache__
+__pycache__/
