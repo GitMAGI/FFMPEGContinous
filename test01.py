@@ -86,14 +86,14 @@ if write_output:
         output_fh = open(os.path.join(output_path, output_filename), 'ab')
         for frameBA in frameBAs:    
             output_fh.write(frameBA)
-        output_fh.close
+        output_fh.close()
     
     if frames is not None and len(frames) > 0:
         output_filename = 'data' + '_' + time.strftime("%Y%m%d-%H%M%S") + '.rgb24'
         output_fh = open(os.path.join(output_path, output_filename), 'ab')
         for frame in frames:
             output_fh.write(frame)
-        output_fh.close
+        output_fh.close()
 # OUTPUT POST WRITING - END
 
 print("Completed")

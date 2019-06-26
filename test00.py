@@ -12,7 +12,7 @@ input_path = 'input'
 video_filename = 'video.mp4'
 input_fh = open(os.path.join(input_path, video_filename), 'rb')
 input_data = input_fh.read()
-input_fh.close
+input_fh.close()
 # INPUT PRE LOADING - END
 
 device_height = 1920
@@ -70,11 +70,6 @@ for i in range(1, len(input_data), slice_size):
         pass
 
     print("%d of %d" % (stop, len(input_data)))
-
-fin.close()
-print("STDIN Closed")
-fout.close()
-print("STDOUT Closed")
 
 print("Collected %d frames" % len(frames))
 print("Collected %d frames of byte arrays" % len(frames))
