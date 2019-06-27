@@ -48,7 +48,7 @@ for i in range(0, len(input_data) - 1, rgb_frame_size):
     start = i
     stop = min([i + rgb_frame_size, len(input_data)])  
 
-    #print("Start B %d | End B %d | Total B %d" % (start + 1, stop, len(input_data)))  
+    #print("Start B %d | End B %d | Total B %d" % (start + 1, stop + 1, len(input_data)))  
 
     try:
         slice_data = input_data[start:stop]

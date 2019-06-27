@@ -52,7 +52,7 @@ fout = NBSR(process.stdout, rgb_frame_size)
 
 frames = []
 frameBAs = []
-for i in range(1, len(input_data), slice_size):
+for i in range(0, len(input_data) - 1, slice_size):
     start = i
     stop = min([i + slice_size, len(input_data)])
     slice_data = input_data[start:stop]
