@@ -13,7 +13,7 @@ input_cmd = [ 'ffmpeg', '-i', os.path.join(input_path, video_filename), '-c:v', 
 input_fh = subprocess.Popen(input_cmd, stdout = subprocess.PIPE)
 print("Command: '{}' started".format(" ".join(str(x) for x in input_cmd)))
 [input_data, input_err] = input_fh.communicate(input = input_fh)
-input_fh.kill()
+print("Got %d Bytes of data" % len(input_data))
 # INPUT PRE LOADING - END
 
 device_height = 1920

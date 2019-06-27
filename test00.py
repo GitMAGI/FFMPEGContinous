@@ -44,9 +44,11 @@ print("Got %d Bytes of data" % len(input_data))
 
 frames = []
 frameBAs = []
-for i in range(1, len(input_data), rgb_frame_size):
+for i in range(0, len(input_data) - 1, rgb_frame_size):
     start = i
-    stop = min([i + rgb_frame_size, len(input_data)])    
+    stop = min([i + rgb_frame_size, len(input_data)])  
+
+    #print("Start B %d | End B %d | Total B %d" % (start + 1, stop, len(input_data)))  
 
     try:
         slice_data = input_data[start:stop]
@@ -68,6 +70,12 @@ print("Collected %d frames of byte arrays" % len(frames))
 if write_output:
     output_path = 'output'
     
+    if input_data is not None and len(input_data) > 0:
+        output_filename = 'dataAll' + '_' + time.strftime("%Y%m%d-%H%M%S") + '.rgb24'
+        output_fh = open(os.path.join(output_path, output_filename), 'ab')
+        output_fh.write(input_data)
+        output_fh.close()
+
     if frameBAs is not None and len(frameBAs) > 0:
         output_filename = 'dataBA' + '_' + time.strftime("%Y%m%d-%H%M%S") + '.rgb24'
         output_fh = open(os.path.join(output_path, output_filename), 'ab')
