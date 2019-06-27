@@ -72,8 +72,6 @@ for i in range(1, len(input_data), slice_size):
 
     #print("%d of %d" % (stop, len(input_data)))
 
-process.kill()
-
 print("Collected %d frames" % len(frames))
 print("Collected %d frames of byte arrays" % len(frames))
 

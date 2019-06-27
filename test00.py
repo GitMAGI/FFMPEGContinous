@@ -9,11 +9,6 @@ print("Starting ...")
 # INPUT PRE LOADING - BEGIN
 input_path = 'input'
 video_filename = 'video.mp4'
-input_cmd = [ 'ffmpeg', '-i', os.path.join(input_path, video_filename), '-c:v', 'h264', '-f', 'h264', 'pipe:1' ]
-input_fh = subprocess.Popen(input_cmd, stdout = subprocess.PIPE)
-print("Command: '{}' started".format(" ".join(str(x) for x in input_cmd)))
-[input_data, input_err] = input_fh.communicate(input = input_fh)
-input_fh.kill()
 # INPUT PRE LOADING - END
 
 device_height = 1920
@@ -23,10 +18,9 @@ scaling_factor = 0.1
 s_height = int(device_height * scaling_factor)
 s_width = int(device_width * scaling_factor)
 
-write_output = True
-slice_size = 1024
 rgb_frame_size = s_width * s_height * 3
-unblocking_factor = 0.008
+
+write_output = True
 
 # C:\msys64\mingw64\bin\ffmpeg -i file.mp4 -c:v rawvideo -f rawvideo -an -pix_fmt rgb24 -s 192x108 pipe:1
 cmd = [
@@ -44,19 +38,19 @@ process = subprocess.Popen(
     stdout = subprocess.PIPE
 )
 print("Command: '{}' started".format(" ".join(str(x) for x in cmd)))
-fout = NBSR(process.stdout, rgb_frame_size)
+[input_data, input_err] = process.communicate()
+
+print("Got %d Bytes of data" % len(input_data))
 
 frames = []
 frameBAs = []
-for i in range(1, len(input_data), slice_size):
+for i in range(1, len(input_data), rgb_frame_size):
     start = i
-    stop = min([i + slice_size, len(input_data)])
-    slice_data = input_data[start:stop]
-
-    #print(slice_data)
+    stop = min([i + rgb_frame_size, len(input_data)])    
 
     try:
-        decoded_frame = fout.read(unblocking_factor)
+        slice_data = input_data[start:stop]
+        decoded_frame = slice_data
         #print(decoded_frame)
         if decoded_frame is not None:
             frames.append(decoded_frame)
@@ -66,8 +60,6 @@ for i in range(1, len(input_data), slice_size):
         pass
 
     #print("%d of %d" % (stop, len(input_data)))
-
-process.kill()
 
 print("Collected %d frames" % len(frames))
 print("Collected %d frames of byte arrays" % len(frames))
