@@ -18,7 +18,7 @@ def main():
             asyncio.set_event_loop(loop)
         else:
             loop = asyncio.get_event_loop()
-        loop.run_until_complete(job05())
+        loop.run_until_complete(job06())
     except KeyboardInterrupt:
         print("Received exit signal!")
     finally:
@@ -32,7 +32,7 @@ def elapsed_time_string(elapsed_time):
     millis = int(round(elapsed_time * 1000)) % 1000
     return time.strftime("%H:%M:%S", time.gmtime(elapsed_time)) + str(".%03d" % millis)
 
-async def job05():
+async def job06():
     input_path = 'input'
     input_filename = 'video.mp4'
     input_fullfilename = os.path.join(input_path, input_filename)
@@ -80,32 +80,39 @@ async def job05():
 
     time.sleep(0.3)
 
-    slice_size = 1024  
     frames = []
-    read_timeout = .05
-    while True:
-        in_data = input_stream.read(slice_size)
-        if not in_data:
-            print("No data from Input Stream. Closing the procedure.")
-            break
-        #print("Read data from Input Stream. Slice Size %d B" % len(in_data))
+    out_data = b''
+    slice_size = 1024
+    data_counter = 0
+    timeout_counter = 0
+    read_timeout = .001
+    while True:        
+        if data_counter < len(input_data):
+            in_data = input_stream.read(slice_size)
+            #print("Read data from Input Stream. Slice Size %d B" % len(in_data))
+            fin.write(in_data)
+            #print("Written data to STDIN of the process. Data Size %d B" % len(in_data))
+            data_counter += slice_size
+            #print("Actually Written %d of %d expected B" % (data_counter, len(input_data)))  
 
-        fin.write(in_data)
-        #print("Written data to STDIN of the process. Data Size %d B" % len(in_data))
+        time.sleep(read_timeout)
         
-        out_data = b''
         try:
             if len(out_data) >= rgb_size_frame:
                 frame = out_data[0:rgb_size_frame]
                 frames.append(frame)
                 out_data = out_data[rgb_size_frame:len(out_data)]
-            out_data += await asyncio.wait_for(fout.readline(), read_timeout)
-            print("Read data from STDOUT of the process: %d B" % len(out_data))
-        except asyncio.TimeoutError:  
-            asyncio.sleep(read_timeout)          
-            frame = None
-            #pass
             
+            out_data += await asyncio.wait_for(fout.read(rgb_size_frame), read_timeout)
+            print("Read data from STDOUT of the process: %d B" % len(out_data))
+        except asyncio.TimeoutError:                      
+            timeout_counter += 1
+            if(timeout_counter > 100):
+                break
+        finally:
+            asyncio.sleep(read_timeout)
+        
+    print("Collected Data Size %d" % len(out_data))        
     print("Total Frames %d" % len(frames))
 
     write_output = True
