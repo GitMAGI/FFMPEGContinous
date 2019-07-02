@@ -1,5 +1,7 @@
 import time
 import sys
+import os
+import io
 import subprocess
 
 def main():
@@ -10,7 +12,8 @@ def main():
         pass
 
     #job00()
-    job01()
+    #job01()
+    job02()
 
     elapsed_time = time.time() - start_time
     print("Completed in %s" % elapsed_time_string(elapsed_time))
@@ -37,12 +40,40 @@ def job01():
         "8.8.8.8",
         "-t"
     ]
-    process = subprocess.Popen(cmd, stdin = subprocess.PIPE, stdout = subprocess.PIPE)
+    process = subprocess.Popen(cmd, stdout = subprocess.PIPE)
     fout = process.stdout
 
     for i in range(1, 10, 1):
         data = read_stream(fout)
         print(data)
+
+
+def job02():
+    input_path = 'input'
+    input_filename = 'video.mp4'
+    input_fullfilename = os.path.join(input_path, input_filename)
+    cmd = [
+        'ffmpeg', '-i', input_fullfilename, '-c:v', 'h264', '-f', 'h264', 'pipe:1'
+    ]
+    input_process = subprocess.Popen(cmd, stdout = subprocess.PIPE)
+    [input_data, input_err] = input_process.communicate(input = input_process)
+    if input_err:
+        sys.stderr.write(input_err + "\n")
+        return
+    print("Got %d Bytes of data" % len(input_data))
+
+    # Simulate a stream buffer
+    input_stream = io.BytesIO(input_data)
+
+    # Start write to stdin of the Process
+    chunk_size = 1024
+    while True:
+        input_chunk = read_stream(input_stream, chunk_size)
+        if input_chunk == '' or input_chunk == b'' or input_chunk == None:
+            break
+        #print(input_chunk)
+
+
 
 
 def read_stream(stream, length = 0):
