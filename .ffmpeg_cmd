@@ -15,3 +15,5 @@ C:\msys64\mingw64\bin\ffmpeg -i tcp://localhost:12332 -c:v rawvideo -f rawvideo 
 
 # FFPLAY
 C:\msys64\mingw64\bin\ffplay -i tcp://localhost:12332
+C:\msys64\mingw64\bin\ffplay -i tcp://localhost:27183 -an -sn -y 320 -x 240
+C:\msys64\mingw64\bin\ffplay -flags low_delay -framedrop -i tcp://localhost:27183 -an -sn -y 320 -x 240
