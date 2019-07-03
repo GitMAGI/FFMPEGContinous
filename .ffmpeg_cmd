@@ -9,3 +9,9 @@ C:\msys64\mingw64\bin\ffmpeg -i .\input\video.mp4 -c:v h264 -f h264 pipe:1 | C:\
 # RAW
 C:\msys64\mingw64\bin\ffmpeg -i .\input\video.mp4 -c:v rawvideo -f rawvideo -an -sn -pix_fmt rgb24 -s 192x108 .\output\dataRaw_20190626-103846.rgb24
 C:\msys64\mingw64\bin\ffmpeg -i .\input\video.mp4 -c:v rawvideo -f rawvideo -an -sn -pix_fmt yuv420p -s 192x108 .\output\dataRaw_20190626-103846.yuv
+
+# TCP
+C:\msys64\mingw64\bin\ffmpeg -i tcp://localhost:12332 -c:v rawvideo -f rawvideo -an -sn -pix_fmt rgb24 -s 192x108 pipe:1
+
+# FFPLAY
+C:\msys64\mingw64\bin\ffplay -i tcp://localhost:12332

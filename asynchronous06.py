@@ -78,69 +78,51 @@ async def job05():
     fin = decode_process.stdin
     fout = decode_process.stdout
 
-    time.sleep(0.3)
+    slice_size = 1024
+    read_timeout = 0.0001
 
-    slice_size = 1024  
-    frames = []
-    read_timeout = .001
+    output_data = b''
+    max_timeouts = 50000
     timeout_counter = 0
+    overall_counter = 0
     while True:
         in_data = input_stream.read(slice_size)
-        if not in_data:
-            print("No data from Input Stream. Closing the procedure.")
-            break
-        print("Read data from Input Stream. Slice Size %d B" % len(in_data))
-
-        fin.write(in_data)
-        print("Written data to STDIN of the process. Data Size %d B" % len(in_data))
-
-        await asyncio.sleep(read_timeout)
+        if in_data:
+            #print("Read data from Input Stream. Slice Size %d B" % len(in_data))
+            fin.write(in_data)
+            #print("Written data to STDIN of the process. Data Size %d B" % len(in_data))
         
-        try:
-            frame = await asyncio.wait_for(fout.read(rgb_size_frame), read_timeout)
-            if frame is not None:
-                frames.append(frame)
-            print("Read data from STDOUT of the process: %d B" % len(frame))
-        except asyncio.TimeoutError:
-            frame = None
-            timeout_counter += 1
-    
-    print("Total Frames %d" % len(frames))
-    print("Waited for %d timeout" % timeout_counter)
+        time.sleep(0)
 
-    counter_all = 0
-    counter_except = 0
-    while True:
         try:
-            await asyncio.sleep(0.02)
-            print("Before Read")
-            line = await asyncio.wait_for(fout.readline(), read_timeout)
-            print("After Read")
-            print("Line content %s" % line)
-            if not line:
-                break
+            output_data_slice = await asyncio.wait_for(fout.readline(), read_timeout)            
+            #print("Read data from STDOUT of the process: %d B" % len(output_data_slice))
+            output_data += output_data_slice
         except asyncio.TimeoutError:
-            counter_except += 1
-            pass
+            timeout_counter += 1
+            #if timeout_counter > max_timeouts:
+            #    break
         finally:
-            counter_all += 1
-    print("Counter All %d. Counter Except %d" % (counter_all, counter_except))
+            overall_counter += 1
+
+    time.sleep(0.5)
+    
+    print("Overall Counter %d. Timeout Counter %d" % (overall_counter, timeout_counter))
+    print("Gathered outpt of size %d B" % len(output_data))
 
     write_output = False
     # OUTPUT POST WRITING - BEGIN
     if write_output:
-        output_path = 'output'
-        
-        if frames is not None and len(frames) > 0:
+        output_path = 'output'        
+        if output_data is not None and len(output_data) > 0:
             output_filename = 'data' + '_' + time.strftime("%Y%m%d-%H%M%S") + '.rgb24'
             output_fh = open(os.path.join(output_path, output_filename), 'ab')
-            for frame in frames:
-                output_fh.write(frame)
+            output_fh.write(output_data)
             output_fh.close()
             print("File %s successfully written!" % os.path.join(output_path, output_filename))
     # OUTPUT POST WRITING - END
 
-    return await decode_process.wait()
+    return await decode_process.wait()  
 
 if __name__ == "__main__":
     main()

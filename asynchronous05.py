@@ -73,7 +73,7 @@ async def job06():
     ]
     cmd_string = " ".join(cmd)
     print("Executing command: %s" % cmd_string)
-    decode_process = await asyncio.create_subprocess_shell(cmd = cmd_string, stdin = asyncio.subprocess.PIPE, stdout = asyncio.subprocess.PIPE)
+    decode_process = await asyncio.create_subprocess_shell(cmd_string, stdin = asyncio.subprocess.PIPE, stdout = asyncio.subprocess.PIPE)
 
     fin = decode_process.stdin
     fout = decode_process.stdout
