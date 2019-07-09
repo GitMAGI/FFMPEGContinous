@@ -15,3 +15,7 @@ C:\msys64\mingw64\bin\ffmpeg -i tcp://localhost:12332 -c:v rawvideo -f rawvideo 
 
 # FFPLAY
 C:\msys64\mingw64\bin\ffplay -i tcp://localhost:12332
+
+# VIDEO TO JPEG
+C:\msys64\mingw64\bin\ffmpeg -i .\input\video.mp4 -s 192x108 -c:v mjpeg -q:v 2 -f image2pipe pipe:1
+
