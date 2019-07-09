@@ -20,3 +20,4 @@ C:\msys64\mingw64\bin\ffplay -flags low_delay -framedrop -i tcp://localhost:2718
 
 # VIDEO TO JPEG SEQUENCE
 C:\msys64\mingw64\bin\ffmpeg -i .\input\video.mp4 -c:v mjpeg -f image2pipe -s 192x108 pipe:1
+C:\msys64\mingw64\bin\ffmpeg -i .\input\video.mp4 -c:v mjpeg -f image2pipe -s 192x108 pipe:1 | C:\msys64\mingw64\bin\ffplay -i pipe:0
